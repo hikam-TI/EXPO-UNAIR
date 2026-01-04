@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expo Kampus Universitas Airlangga</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        unairBlue: '#004a99',
+                        unairGold: '#ffcc00',
+                        darkBg: '#0f172a',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .faculty-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 74, 153, 0.2);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #004a99;
+            border-radius: 10px;
+        }
+        
+        .nav-link {
+            position: relative;
+            padding-bottom: 2px;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #ffcc00;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-darkBg dark:text-slate-100 overflow-x-hidden">
+
+    <!-- Animasi Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 glass shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-2">
+                    <div class="w-100 h-100 bg-unairBlue rounded-lg flex items-center justify-center text-white font-bold text-xl">UNAIR</div>
+                    <span class="font-extrabold text-xl tracking-tight">Universitas <span class="text-unairBlue dark:text-unairGold">Airlangga</span></span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center gap-8">
+                    <a href="#" class="nav-link font-semibold text-sm">Home</a>
+                    <a href="#visimisi" class="nav-link font-semibold text-sm">Visi & Misi</a>
+                    <a href="#kampus" class="nav-link font-semibold text-sm">Kampus</a>
+                    <a href="#jalur" class="nav-link font-semibold text-sm">Jalur Penerimaan</a>
+                    <a href="#lokasi" class="nav-link font-semibold text-sm">Lokasi</a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                        <i id="theme-icon" class="fas fa-moon"></i>
+                    </button>
+                    <button id="mobile-menu-btn" class="lg:hidden p-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden glass border-t border-slate-200 dark:border-slate-800 animate-in slide-in-from-top duration-300">
+            <div class="flex flex-col p-4 gap-4">
+                <a href="#" class="font-semibold" onclick="toggleMenu()">Home</a>
+                <a href="#visimisi" class="font-semibold" onclick="toggleMenu()">Visi & Misi</a>
+                <a href="#kampus" class="font-semibold" onclick="toggleMenu()">Kampus</a>
+                <a href="#jalur" class="font-semibold" onclick="toggleMenu()">Jalur Penerimaan</a>
+                <a href="#lokasi" class="font-semibold" onclick="toggleMenu()">Lokasi</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-40 pb-20 px-4">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 animate-float">
+                Masa Depanmu <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-unairBlue to-blue-400 dark:from-unairGold dark:to-yellow-200">Dimulai di Sini.</span>
+            </h1>
+            <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
+                Bergabunglah dengan Universitas Airlangga. Kampus terbaik untuk mencetak generasi unggul dengan moralitas tinggi.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <div class="glass p-4 rounded-2xl flex flex-col items-center min-w-[120px]">
+                    <span class="text-3xl font-bold text-unairBlue dark:text-unairGold">#1</span>
+                    <span class="text-xs uppercase font-semibold">Kampus Jatim</span>
+                </div>
+                <div class="glass p-4 rounded-2xl flex flex-col items-center min-w-[120px]">
+                    <span class="text-3xl font-bold text-unairBlue dark:text-unairGold">#2</span>
+                    <span class="text-xs uppercase font-semibold">Kampus Nasional</span>
+                </div>
+                <div class="glass p-4 rounded-2xl flex flex-col items-center min-w-[120px]">
+                    <span class="text-3xl font-bold text-unairBlue dark:text-unairGold">#287</span>
+                    <span class="text-xs uppercase font-semibold">Kampus Dunia</span>
+                </div>
+                <div class="glass p-4 rounded-2xl flex flex-col items-center min-w-[120px]">
+                    <span class="text-3xl font-bold text-unairBlue dark:text-unairGold">16</span>
+                    <span class="text-xs uppercase font-semibold">Fakultas</span>
+                </div>
+                <div class="glass p-4 rounded-2xl flex flex-col items-center min-w-[120px]">
+                    <span class="text-3xl font-bold text-unairBlue dark:text-unairGold">100+</span>
+                    <span class="text-xs uppercase font-semibold">Prodi</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visi Misi -->
+    <section id="visimisi" class="py-24 px-4 bg-white/30 dark:bg-white/5">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div class="order-2 md:order-1">
+                <h2 class="text-4xl font-bold mb-8">Visi & Misi</h2>
+                <div class="space-y-8">
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-unairBlue/10 rounded-2xl flex items-center justify-center text-unairBlue dark:text-unairGold">
+                            <i class="fas fa-eye text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl mb-2">Visi</h3>
+                            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Menjadi universitas yang mandiri, inovatif, terkemuka di tingkat nasional dan internasional, pelopor pengembangan ilmu pengetahuan, teknologi, humaniora dan seni berdasarkan moral agama.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-unairBlue/10 rounded-2xl flex items-center justify-center text-unairBlue dark:text-unairGold">
+                            <i class="fas fa-bullseye text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl mb-2">Misi</h3>
+                            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">1. Menyelenggarakan dan mengembangkan pendidikan akademik, profesi, dan/atau vokasi dengan keunggulan kelas dunia berlandaskan nilai kebangsaan dan moral agama.</p>
+                            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">2. Menyelenggarakan penelitian dasar, terapan, dan penelitian kebijakan yang inovatif dengan keunggulan kelas dunia berlandaskan nilai kebangsaan dan moral agama untuk menunjang pengembangan pendidikan dan pengabdian kepada masyarakat.</p>
+                            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">3. Mendarmabaktikan keahlian dalam bidang ilmu, teknologi, dan humaniora kepada masyarakat.</p>
+                            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">4. Mengelola universitas secara mandiri dengan tata kelola yang baik melalui pengembangan kelembagaan yang berorientasi pada mutu dan mampu bersaing di tingkat internasional.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-1 md:order-2 flex justify-center">
+                <div class="relative w-72 h-72 md:w-96 md:h-96">
+                    <div class="absolute inset-0 bg-unairBlue/20 rounded-full animate-pulse-slow"></div>
+                    <div class="absolute inset-8 border-4 border-dashed border-unairGold/50 rounded-full animate-[spin_30s_linear_infinite]"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <img src="UNAIR.png" alt="Logo UNAIR" class="w-80 h-80 object-contain">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kampus Section -->
+    <section id="kampus" class="py-24 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-extrabold mb-4">Pilihan Kampus</h2>
+                <p class="text-slate-600 dark:text-slate-400">Jelajahi setiap sudut kampus kami dan temukan fakultas impianmu</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6" id="campus-grid">
+                <!-- Javascript will render this -->
+            </div>
+
+            <div id="detail-container" class="mt-12 hidden">
+                <div class="glass p-8 md:p-12 rounded-[2rem] border-2 border-unairBlue/20 shadow-xl">
+                    <div class="flex justify-between items-start mb-10">
+                        <div>
+                            <h3 id="selected-campus-name" class="text-4xl font-extrabold text-unairBlue dark:text-unairGold mb-2">Nama Kampus</h3>
+                            <p id="selected-campus-loc" class="text-slate-500 italic"><i class="fas fa-map-marker-alt mr-2"></i>Lokasi Lengkap</p>
+                        </div>
+                        <button onclick="closeDetails()" class="text-slate-400 hover:text-red-500 transition-colors">
+                            <i class="fas fa-times-circle text-3xl"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <div>
+                            <h4 class="font-bold mb-6 uppercase text-sm tracking-widest text-slate-400 border-b pb-2">Daftar Fakultas</h4>
+                            <div id="faculty-list" class="space-y-4">
+                                <!-- JS items here -->
+                            </div>
+                        </div>
+                        
+                        <div id="prodi-section" class="hidden animate-in fade-in slide-in-from-right duration-500">
+                            <h4 class="font-bold mb-6 uppercase text-sm tracking-widest text-slate-400 border-b pb-2">Program Studi <span id="current-faculty-name" class="text-unairBlue dark:text-unairGold ml-1"></span></h4>
+                            <div id="prodi-list" class="grid grid-cols-1 gap-3 max-h-[450px] overflow-y-auto custom-scrollbar pr-4">
+                                <!-- JS items here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Jalur Penerimaan -->
+    <section id="jalur" class="py-24 px-4 bg-unairBlue/5 dark:bg-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-extrabold mb-4">Jalur Penerimaan</h2>
+                <p class="text-slate-600 dark:text-slate-400">Pilih jalur yang paling sesuai dengan potensi dan prestasimu</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass p-8 rounded-3xl transition-all border border-transparent hover:border-unairGold">
+                    <div class="w-12 h-12 bg-unairBlue/10 rounded-xl flex items-center justify-center text-unairBlue dark:text-unairGold mb-6">
+                        <i class="fas fa-award text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">SNBP</h3>
+                    <p class="text-sm opacity-80 mb-6 text-slate-600 dark:text-slate-400">Seleksi Nasional Berdasarkan Prestasi. Jalur untuk siswa berprestasi akademik maupun non-akademik selama sekolah.</p>
+                    <ul class="space-y-3 text-sm opacity-90">
+                        <li class="flex items-center"><i class="fas fa-check-circle text-unairBlue dark:text-unairGold mr-3"></i> Seleksi Nilai Rapor</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-unairBlue dark:text-unairGold mr-3"></i> Tanpa Tes Tulis</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-unairBlue dark:text-unairGold mr-3"></i> Berdasarkan Akreditasi Sekolah</li>
+                    </ul>
+                </div>
+                <div class="glass p-8 rounded-3xl transition-all border-2 border-unairBlue shadow-lg relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 bg-unairBlue text-white text-[10px] font-bold uppercase tracking-widest rounded-bl-xl">
+                        Populer
+                    </div>
+                    <div class="w-12 h-12 bg-unairBlue rounded-xl flex items-center justify-center text-white mb-6">
+                        <i class="fas fa-file-signature text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">SNBT</h3>
+                    <p class="text-sm opacity-80 mb-6 text-slate-600 dark:text-slate-400">Seleksi Nasional Berdasarkan Tes. Menggunakan UTBK yang berfokus pada tes skolastik, literasi, dan penalaran matematika.</p>
+                    <ul class="space-y-3 text-sm opacity-90">
+                        <li class="flex items-center"><i class="fas fa-check-circle text-unairBlue dark:text-unairGold mr-3"></i> Tes Berbasis Komputer</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-unairBlue dark:text-unairGold mr-3"></i> Skala Nasional</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-unairBlue dark:text-unairGold mr-3"></i> Transparansi Nilai Hasil Tes</li>
+                    </ul>
+                </div>
+                <div class="glass p-8 rounded-3xl transition-all border border-transparent hover:border-unairGold">
+                    <div class="w-12 h-12 bg-unairBlue/10 rounded-xl flex items-center justify-center text-unairBlue dark:text-unairGold mb-6">
+                        <i class="fas fa-user-graduate text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">MANDIRI</h3>
+                    <p class="text-sm opacity-80 mb-6 text-slate-600 dark:text-slate-400">Seleksi yang dikelola secara internal oleh Universitas Airlangga melalui berbagai skema tes dan portofolio prestasi.</p>
+                    <ul class="space-y-3 text-sm opacity-90">
+                        <li class="flex items-center"><i class="fas fa-check-circle text-unairBlue dark:text-unairGold mr-3"></i> Mandiri Prestasi</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-unairBlue dark:text-unairGold mr-3"></i> Mandiri Nilai UTBK</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-unairBlue dark:text-unairGold mr-3"></i> Mandiri Ujian Tulis</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-12 text-center p-6 glass rounded-2xl max-w-2xl mx-auto border-dashed border-2 border-unairBlue/20">
+                <p class="text-sm text-slate-500 italic">
+                    <i class="fas fa-info-circle mr-2"></i> Detail lengkap jadwal dan tata cara pendaftaran akan diperbarui segera setelah rilis resmi dari PPMB Universitas Airlangga.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lokasi Section -->
+    <section id="lokasi" class="py-24 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-extrabold mb-4">Lokasi Kampus</h2>
+                <p class="text-slate-600 dark:text-slate-400">Temukan alamat lengkap unit pendidikan kami di berbagai lokasi</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass p-6 rounded-2xl border-l-4 border-unairBlue hover:shadow-lg transition-shadow">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-unairBlue text-white rounded-lg flex items-center justify-center font-bold">A</div>
+                        <h3 class="font-bold text-lg">Kampus A (Dharmahusada)</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                        <i class="fas fa-map-marker-alt text-unairBlue mr-2"></i>
+                        Jl. Prof. Dr. Moestopo No. 47, Surabaya, Jawa Timur 60132
+                    </p>
+                    <div class="flex gap-2">
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">Kedokteran</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">Kedokteran Gigi</span>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-2xl border-l-4 border-unairGold hover:shadow-lg transition-shadow">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-unairGold text-unairBlue rounded-lg flex items-center justify-center font-bold">B</div>
+                        <h3 class="font-bold text-lg">Kampus B (Dharmawangsa)</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                        <i class="fas fa-map-marker-alt text-unairGold mr-2"></i>
+                        Jl. Airlangga No. 4 - 6, Surabaya, Jawa Timur 60286
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FEB</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FIB</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FPsi</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FH</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FISIP</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">Vokasi</span>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-2xl border-l-4 border-unairBlue hover:shadow-lg transition-shadow">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-unairBlue text-white rounded-lg flex items-center justify-center font-bold">C</div>
+                        <h3 class="font-bold text-lg">Kampus C (Mulyorejo)</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                        <i class="fas fa-map-marker-alt text-unairBlue mr-2"></i>
+                        Jl. Mulyorejo, Kec. Mulyorejo, Surabaya, Jawa Timur 60115
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">Rektorat</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FST</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FTMM</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FF</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FKP</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FPK</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FKH</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FKM</span>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-2xl border-l-4 border-unairGold hover:shadow-lg transition-shadow">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-unairGold text-unairBlue rounded-lg flex items-center justify-center font-bold">B</div>
+                        <h3 class="font-bold text-lg">Kampus FIKKIA I (Banyuwangi) </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                        <i class="fas fa-map-marker-alt text-unairGold mr-2"></i>
+                        Jl. Wijaya Kusuma No. 113, Kec. Giri, Kabupaten Banyuwangi, 68425. 
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FIKKIA</span>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-2xl border-l-4 border-unairBlue hover:shadow-lg transition-shadow">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-unairBlue text-white rounded-lg flex items-center justify-center font-bold">C</div>
+                        <h3 class="font-bold text-lg">Kampus FIKKIA II (Banyuwangi)</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                        <i class="fas fa-map-marker-alt text-unairBlue mr-2"></i>
+                        Jl. Ikan Wijinongko No.18a, Sobo, Kec. Banyuwangi, Kabupaten Banyuwangi, 68418.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FIKKIA</span>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-2xl border-l-4 border-unairGold hover:shadow-lg transition-shadow">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-unairGold text-unairBlue rounded-lg flex items-center justify-center font-bold">B</div>
+                        <h3 class="font-bold text-lg">Kampus FIKKIA III (Banyuwangi) </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                        <i class="fas fa-map-marker-alt text-unairGold mr-2"></i>
+                        Jalan Jaksa Agung Suprapto 142 Mojopanggung, Banyuwangi, 68425.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">FIKKIA</span>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-2xl border-l-4 border-unairBlue hover:shadow-lg transition-shadow">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-unairBlue text-white rounded-lg flex items-center justify-center font-bold">C</div>
+                        <h3 class="font-bold text-lg">Kampus Gresik </h3>
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                        <i class="fas fa-map-marker-alt text-unairBlue mr-2"></i>
+                        Jl. Dr Wahidin Sudiro Husodo No 211A, Kembangan, Kec Kebomas, Kab Gresik, Jawa Timur 61124
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase font-bold">VOKASI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-slate-200 dark:border-slate-800 text-center text-slate-500 text-sm">
+        <div class="mb-6 flex justify-center gap-2">
+            <div class="w-8 h-8 bg-unairBlue rounded flex items-center justify-center text-white font-bold">U</div>
+            <div class="w-8 h-8 bg-unairGold rounded flex items-center justify-center text-unairBlue font-bold">A</div>
+        </div>
+        <p class="mb-2">&copy; 2026 Universitas Airlangga - Excellence with Morality</p>
+        <p class="italic">Surabaya - Banyuwangi - Gresik</p>
+    </footer>
+
+    <script>
+        // --- DATA ---
+        const campusData = [
+            {
+                id: 'a',
+                name: 'Kampus A',
+                location: 'Jl. Prof. Dr. Moestopo No. 47',
+                desc: 'Fokus pada Kedokteran & Kedokteran Gigi',
+                faculties: [
+                    {
+                        name: 'Fakultas Kedokteran (FK)',
+                        prodi: ['S1 Kedokteran', 'S1 Kebidanan']
+                    },
+                    {
+                        name: 'Fakultas Kedokteran Gigi (FKG)',
+                        prodi: ['S1 Kedokteran Gigi']
+                    }
+                ]
+            },
+            {
+                id: 'b',
+                name: 'Kampus B',
+                location: 'Jl. Airlangga No. 4 - 6',
+                desc: 'Pusat Ilmu Sosial, Ekonomi & Vokasi',
+                faculties: [
+                    { name: 'Fakultas Hukum (FH)', prodi: ['S1 Ilmu Hukum'] },
+                    { 
+                        name: 'Fakultas Ekonomi dan Bisnis (FEB)', 
+                        prodi: ['S1 Ekonomi Pembangunan', 'S1 Akuntansi', 'S1 Ekonomi Islam', 'S1 Manajemen'] 
+                    },
+                    { name: 'Fakultas Psikologi (FPsi)', prodi: ['S1 Psikologi'] },
+                    { 
+                        name: 'Fakultas Ilmu Sosial & Ilmu Politik (FISIP)', 
+                        prodi: [
+                            'S1 Ilmu Informasi dan Perpustakaan', 
+                            'S1 Antropologi', 
+                            'S1 Administrasi Publik', 
+                            'S1 Ilmu Hubungan Internasional', 
+                            'S1 Ilmu Komunikasi', 
+                            'S1 Ilmu Politik', 
+                            'S1 Sosiologi'
+                        ] 
+                    },
+                    { 
+                        name: 'Fakultas Ilmu Budaya (FIB)', 
+                        prodi: [
+                            'S1 Bahasa dan Sastra Indonesia', 
+                            'S1 Bahasa dan Sastra Inggris', 
+                            'S1 Ilmu Sejarah', 
+                            'S1 Bahasa dan Sastra Jepang'
+                        ] 
+                    },
+                    { 
+                        name: 'Fakultas Vokasi', 
+                        prodi: [
+                            'D4 Teknologi Kesehatan Gigi',
+                            'D4 Pengobat Tradisional',
+                            'D4 Fisioterapi',
+                            'D4 Teknologi Radiologi Pencitraan',
+                            'D4 Teknologi Laboratorium Medik',
+                            'D4 Keselamatan dan Kesehatan Kerja',
+                            'D4 Teknologi Veteriner',
+                            'D3 Perpustakaan',
+                            'D4 Kearsipan dan Informasi Digital',
+                            'D4 Teknik Informatika',
+                            'D4 Teknologi Rekayasa Instrumentasi Dan Kontrol',
+                            'D3 Bahasa Inggris',
+                            'D3 Perpajakan',
+                            'D4 Akuntansi Bisnis Digital',
+                            'D4 Manajemen Komunikasi Pemasaran',
+                            'D4 Manajemen Perhotelan',
+                            'D4 Destinasi Pariwisata',
+                            'D4 Manajemen Perkantoran Digital',
+                            'D4 Perbankan Dan Keuangan'
+                        ] 
+                    }
+                ]
+            },
+            {
+                id: 'c',
+                name: 'Kampus C',
+                location: 'Jl. Mulyorejo',
+                desc: 'Pusat Sains, Teknologi & Kesehatan Baru',
+                faculties: [
+                    { name: 'Fakultas Farmasi (FF)', prodi: ['S1 Farmasi'] },
+                    { name: 'Fakultas Sains dan Teknologi (FST)', prodi: ['S1 Matematika', 'S1 Biologi', 'S1 Fisika', 'S1 Kimia', 'S1 Sistem Informasi', 'S1 Statistika', 'S1 Teknik Lingkungan'] },
+                    { name: 'Fakultas Kesehatan Masyarakat (FKM)', prodi: ['S1 Kesehatan Masyarakat', 'S1 Gizi'] },
+                    { name: 'Fakultas Kedokteran Hewan (FKH)', prodi: ['S1 Kedokteran Hewan'] },
+                    { name: 'Fakultas Keperawatan (FKP)', prodi: ['S1 Keperawatan'] },
+                    { name: 'Fakultas Perikanan dan Kelautan (FPK)', prodi: ['S1 Akuakultur', 'S1 Teknologi Hasil Perikanan'] },
+                    { name: 'Fakultas Teknologi Maju dan Multidisiplin (FTMM)', prodi: ['S1 Teknik Robotika dan Kecerdasan Buatan', 'S1 Teknologi Sains Data', 'S1 Rekayasa Nanoteknologi', 'S1 Teknik Elektro', 'S1 Teknik Industri'] }
+                ]
+            },
+            {
+                id: 'Gresik',
+                name: 'Kampus Gresik',
+                location: 'Jl. Dr Wahidin Sudiro Husodo No 211A',
+                desc: 'Pusat Vokasi',
+                faculties: [
+                    { name: 'Fakultas Vokasi (FV)', prodi: ['D3 Keselamatan dan Kesehatan Kerja (K3)', 'D3 Teknologi Laboratorium Medis', 'D4 Teknolog Radiologi Pencitraan.'] },
+                ]
+            },
+            {
+                id: 'FIKKIA I',
+                name: 'Kampus FIKKIA I',
+                location: 'Jl. Mulyorejo',
+                desc: 'Pusat Sains & Kesehatan',
+                faculties: [
+                    { name : 'FIKKIA I', prodi: ['S1 Akuakultur', 'S1 Kedokteran Hewan'] },
+                ]
+            },
+            {
+                id: 'FIKKIA II',
+                name: 'Kampus FIKKIA II',
+                location: 'Jl. Mulyorejo',
+                desc: 'Pusat Kesehatan Masyarakat',
+                faculties: [
+                    { name: 'FIKKIA II', prodi: ['S1 Kesehatan Masyarakat'] },
+                ]
+            },
+            {
+                id: 'FIKKIA III',
+                name: 'Kampus FIKKIA III',
+                location: 'Jl. Mulyorejo',
+                desc: 'Pusat Kedokteran',
+                faculties: [
+                    { name: 'Fakultas Farmasi (FF)', prodi: ['S1 Kedokteran'] },
+                ]
+            }
+        ];
+
+        // --- MOBILE MENU ---
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+
+        function toggleMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+        mobileMenuBtn.addEventListener('click', toggleMenu);
+
+        // --- THEME LOGIC ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const html = document.documentElement;
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        });
+
+        // --- BACKGROUND ANIMATION ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                const color = html.classList.contains('dark') ? '255, 204, 0' : '0, 74, 153';
+                ctx.fillStyle = `rgba(${color}, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 60; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        initParticles();
+        animate();
+
+        // --- CAMPUS LOGIC ---
+        const campusGrid = document.getElementById('campus-grid');
+        const detailContainer = document.getElementById('detail-container');
+        const facultyList = document.getElementById('faculty-list');
+        const prodiList = document.getElementById('prodi-list');
+        const prodiSection = document.getElementById('prodi-section');
+
+        function renderCampuses() {
+            campusGrid.innerHTML = campusData.map(c => `
+                <div onclick="selectCampus('${c.id}')" class="glass p-6 rounded-3xl cursor-pointer hover:border-unairBlue hover:shadow-2xl transition-all group border border-transparent">
+                    <div class="w-14 h-14 bg-unairBlue/10 rounded-2xl flex items-center justify-center text-unairBlue dark:text-unairGold mb-6 group-hover:bg-unairBlue group-hover:text-white transition-all">
+                        <i class="fas fa-university text-xl"></i>
+                    </div>
+                    <h4 class="font-bold text-xl mb-2">${c.name}</h4>
+                    <p class="text-sm text-slate-500 line-clamp-2">${c.desc}</p>
+                    <div class="mt-4 flex items-center text-xs font-bold text-unairBlue dark:text-unairGold opacity-0 group-hover:opacity-100 transition-opacity">
+                        LIHAT FAKULTAS <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.selectCampus = (id) => {
+            const campus = campusData.find(c => c.id === id);
+            document.getElementById('selected-campus-name').innerText = campus.name;
+            document.getElementById('selected-campus-loc').innerText = campus.location;
+            
+            detailContainer.classList.remove('hidden');
+            prodiSection.classList.add('hidden');
+            
+            facultyList.innerHTML = campus.faculties.map((f, idx) => `
+                <button onclick="selectFaculty('${id}', ${idx})" class="w-full text-left p-5 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-unairBlue hover:text-white transition-all faculty-card flex justify-between items-center group bg-white/50 dark:bg-slate-800/50">
+                    <span class="font-bold">${f.name}</span>
+                    <i class="fas fa-chevron-right text-xs opacity-0 group-hover:opacity-100 transition-opacity translate-x-[-10px] group-hover:translate-x-0"></i>
+                </button>
+            `).join('');
+
+            detailContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.selectFaculty = (campusId, facultyIdx) => {
+            const campus = campusData.find(c => c.id === campusId);
+            const faculty = campus.faculties[facultyIdx];
+            
+            prodiSection.classList.remove('hidden');
+            document.getElementById('current-faculty-name').innerText = faculty.name;
+            
+            prodiList.innerHTML = faculty.prodi.map(p => `
+                <div class="p-4 rounded-xl bg-white dark:bg-slate-800 shadow-sm border-l-4 border-unairGold hover:border-unairBlue transition-colors font-semibold text-sm">
+                    ${p}
+                </div>
+            `).join('');
+        }
+
+        window.closeDetails = () => { detailContainer.classList.add('hidden'); }
+        renderCampuses();
+    </script>
+</body>
+</html>
